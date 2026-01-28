@@ -1,0 +1,44 @@
+# Laravel
+/backend/vendor/
+/backend/node_modules/
+/backend/public/hot
+/backend/public/storage
+/backend/storage/*.key
+/backend/.env
+/backend/.env.backup
+/backend/.phpunit.result.cache
+/backend/Homestead.json
+/backend/Homestead.yaml
+/backend/npm-debug.log
+/backend/yarn-error.log
+/backend/.phpunit.cache
+
+# Next.js
+/frontend/.next/
+/frontend/out/
+/frontend/build
+/frontend/dist
+/frontend/node_modules/
+/frontend/.env*.local
+/frontend/.vercel
+/frontend/.turbo
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker
+/docker/php/composer.phar
+
+# Logs
+*.log
+
+# Testing
+/backend/coverage/
+/frontend/coverage/
+/backend/.pest_cache/
+.env
