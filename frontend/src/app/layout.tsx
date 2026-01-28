@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { I18nProvider } from "@/lib/i18n";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,7 +15,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.Node;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -24,7 +26,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <I18nProvider>{children}</I18nProvider>
         </ThemeProvider>
       </body>
     </html>

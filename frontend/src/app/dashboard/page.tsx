@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { MessageCircle, Search, Plus, Bot, UserPlus, Users, LogOut, Shield } from 'lucide-react';
 import api from '@/lib/api';
 import SearchModal from '@/components/SearchModal';
+import { useI18n } from '@/lib/i18n';
 
 interface User {
   id: number;
@@ -42,6 +43,8 @@ interface ConversationSearchResult {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { t, locale } = useI18n();
+  const localeMap: Record<string, string> = { en: 'en-US', pt: 'pt-BR', es: 'es-ES' };
   const [user, setUser] = useState<User | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -173,20 +176,20 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2">
               <MessageCircle className="w-6 h-6 text-purple-400" />
               <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                ChatFlow
+                {t('app.brand')}
               </span>
             </div>
             <button
               onClick={handleLogout}
               className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-              title="Sair"
+              title={t('dashboard.logout')}
             >
               <LogOut className="w-5 h-5 text-gray-400" />
             </button>
             <button
               onClick={() => router.push('/settings/2fa')}
               className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-              title="Segurança (2FA)"
+              title={t('dashboard.security')}
             >
               <Shield className="w-5 h-5 text-gray-400" />
             </button>
@@ -210,7 +213,7 @@ export default function DashboardPage() {
             className="w-full flex items-center gap-3 p-3 bg-purple-600 hover:bg-purple-700 rounded-lg transition-all hover:scale-105"
           >
             <UserPlus className="w-5 h-5" />
-            <span className="font-semibold">Adicionar Amigo</span>
+            <span className="font-semibold">{t('dashboard.sidebar.actions.addFriend')}</span>
           </button>
           
           <button
@@ -219,7 +222,9 @@ export default function DashboardPage() {
             className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 rounded-lg transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             <Bot className="w-5 h-5" />
-            <span className="font-semibold">{creatingChat ? 'Criando...' : 'Conversar com IA'}</span>
+            <span className="font-semibold">
+              {creatingChat ? t('dashboard.sidebar.actions.aiChat.loading') : t('dashboard.sidebar.actions.aiChat')}
+            </span>
           </button>
         </div>
 
@@ -228,14 +233,14 @@ export default function DashboardPage() {
           <div className="p-4">
             <h3 className="text-sm font-semibold text-gray-400 mb-3 flex items-center gap-2">
               <MessageCircle className="w-4 h-4" />
-              CONVERSAS
+              {t('dashboard.sidebar.conversations.title')}
             </h3>
             
             {conversations.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">Nenhuma conversa ainda</p>
-                <p className="text-xs mt-1">Adicione amigos para começar</p>
+                <p className="text-sm">{t('dashboard.sidebar.conversations.empty.title')}</p>
+                <p className="text-xs mt-1">{t('dashboard.sidebar.conversations.empty.subtitle')}</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -312,7 +317,7 @@ export default function DashboardPage() {
               type="text"
               value={chatSearch}
               onChange={(e) => setChatSearch(e.target.value)}
-              placeholder="Pesquisar mensagens em chats..."
+              placeholder={t('dashboard.search.placeholder')}
               className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
@@ -320,9 +325,9 @@ export default function DashboardPage() {
           {(chatSearchLoading || chatSearchResults.length > 0 || chatSearch.trim().length >= 2) && (
             <div className="mt-4 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
               {chatSearchLoading ? (
-                <div className="p-4 text-sm text-gray-400">Pesquisando...</div>
+                <div className="p-4 text-sm text-gray-400">{t('dashboard.search.loading')}</div>
               ) : chatSearchResults.length === 0 ? (
-                <div className="p-4 text-sm text-gray-400">Nenhuma conversa encontrada.</div>
+                <div className="p-4 text-sm text-gray-400">{t('dashboard.search.empty')}</div>
               ) : (
                 <div className="divide-y divide-gray-700">
                   {chatSearchResults.map((result) => (
@@ -344,13 +349,13 @@ export default function DashboardPage() {
                             <p className="font-semibold truncate">{result.name}</p>
                             {result.matched_message && (
                               <span className="text-xs text-gray-400">
-                                {new Date(result.matched_message.created_at).toLocaleDateString('pt-BR')}
+                                {new Date(result.matched_message.created_at).toLocaleDateString(localeMap[locale] || locale)}
                               </span>
                             )}
                           </div>
                           {result.matched_message && (
                             <p className="text-sm text-gray-300 truncate">
-                              {result.matched_message.user?.name ? `${result.matched_message.user.name}: ` : ''}
+                              {result.matched_message.user?.name ? `${result.matched_message.user.name}${t('dashboard.search.authorPrefix')}` : ''}
                               {result.matched_message.content}
                             </p>
                           )}
@@ -383,7 +388,7 @@ export default function DashboardPage() {
             transition={{ delay: 0.2 }}
             className="text-3xl font-bold mb-3 text-gray-200"
           >
-            Bem-vindo ao ChatFlow
+            {t('dashboard.welcome.title')}
           </motion.h2>
           
           <motion.p
@@ -392,7 +397,7 @@ export default function DashboardPage() {
             transition={{ delay: 0.3 }}
             className="text-gray-400 mb-8 max-w-md"
           >
-            Selecione uma conversa na barra lateral ou adicione novos amigos para começar a conversar
+            {t('dashboard.welcome.subtitle')}
           </motion.p>
           
           <motion.div
@@ -406,7 +411,7 @@ export default function DashboardPage() {
               className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition-all hover:scale-105 flex items-center gap-2"
             >
               <UserPlus className="w-5 h-5" />
-              Adicionar Amigo
+              {t('dashboard.welcome.addFriend')}
             </button>
             
             <button
@@ -415,7 +420,7 @@ export default function DashboardPage() {
               className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition-all hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               <Bot className="w-5 h-5" />
-              {creatingChat ? 'Criando...' : 'Chat com IA'}
+              {creatingChat ? t('dashboard.sidebar.actions.aiChat.loading') : t('dashboard.welcome.aiChat')}
             </button>
           </motion.div>
         </div>
@@ -437,24 +442,24 @@ export default function DashboardPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="bg-gray-800 rounded-xl p-6 max-w-md w-full border border-gray-700"
           >
-            <h3 className="text-xl font-bold mb-4">Excluir Conversa?</h3>
-            <p className="text-gray-400 mb-6">
-              Tem certeza que deseja excluir esta conversa? Todas as mensagens serão permanentemente removidas.
-            </p>
+            <h3 className="text-xl font-bold mb-4">{t('dashboard.chat.delete.title')}</h3>
+            <p className="text-gray-400 mb-6">{t('dashboard.chat.delete.body')}</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmDelete(null)}
                 disabled={deletingConversationId === confirmDelete}
                 className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition-all disabled:opacity-50"
               >
-                Cancelar
+                {t('dashboard.chat.delete.cancel')}
               </button>
               <button
                 onClick={() => handleDeleteConversation(confirmDelete)}
                 disabled={deletingConversationId === confirmDelete}
                 className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-all disabled:opacity-50"
               >
-                {deletingConversationId === confirmDelete ? 'Excluindo...' : 'Excluir'}
+                {deletingConversationId === confirmDelete
+                  ? t('dashboard.chat.delete.confirming')
+                  : t('dashboard.chat.delete.confirm')}
               </button>
             </div>
           </motion.div>

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Send, Bot, Loader2, MoreVertical } from 'lucide-react';
 import api from '@/lib/api';
 import Echo from '@/lib/echo';
+import { useI18n } from '@/lib/i18n';
 
 interface Message {
   id: number | string;
@@ -29,8 +30,10 @@ interface Conversation {
 
 export default function ChatPage() {
   const router = useRouter();
+  const { t, locale } = useI18n();
   const params = useParams();
   const conversationId = params.id as string;
+  const localeMap: Record<string, string> = { en: 'en-US', pt: 'pt-BR', es: 'es-ES' };
   
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -143,7 +146,7 @@ export default function ChatPage() {
       type: 'user',
       user: {
         id: currentUserId!,
-        name: 'Você'
+        name: t('chat.you')
       },
       created_at: new Date().toISOString()
     };
@@ -151,7 +154,7 @@ export default function ChatPage() {
 
     // Show typing indicator for AI
     if (conversation?.type === 'ai') {
-      setTypingUsers(['AI Assistant']);
+      setTypingUsers([t('chat.ai.typing')]);
     }
 
     try {
@@ -199,7 +202,7 @@ export default function ChatPage() {
           <div className="flex-1">
             <h2 className="font-semibold">{conversation?.name}</h2>
             <p className="text-sm text-gray-400">
-              {conversation?.type === 'ai' ? 'Assistente com IA' : 'Online'}
+              {conversation?.type === 'ai' ? t('chat.ai.title') : t('chat.status.online')}
             </p>
           </div>
           
@@ -238,7 +241,7 @@ export default function ChatPage() {
                 <div>
                   {!isOwn && (
                     <p className="text-xs text-gray-400 mb-1 px-2">
-                      {isBot ? 'AI Assistant' : message.user?.name}
+                      {isBot ? t('chat.ai.title') : message.user?.name}
                     </p>
                   )}
                   <div
@@ -253,7 +256,7 @@ export default function ChatPage() {
                     <p className="whitespace-pre-wrap break-words">{message.content}</p>
                   </div>
                   <p className="text-xs text-gray-500 mt-1 px-2">
-                    {new Date(message.created_at).toLocaleTimeString('pt-BR', {
+                    {new Date(message.created_at).toLocaleTimeString(localeMap[locale] || locale, {
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
@@ -294,7 +297,7 @@ export default function ChatPage() {
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Digite uma mensagem..."
+            placeholder={t('chat.input.placeholder')}
             className="flex-1 px-4 py-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             disabled={waitingForBot}
           />

@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import { MessageCircle, Users, Zap, Shield, Sparkles, Github } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useI18n } from '@/lib/i18n';
 
 export default function LandingPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-2">
               <MessageCircle className="w-8 h-8 text-purple-400" />
               <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                ChatFlow
+                {t('app.brand')}
               </span>
             </div>
           </div>
@@ -78,7 +80,7 @@ export default function LandingPage() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent"
             >
-              Conecte-se de forma inteligente
+              {t('landing.title')}
             </motion.h1>
 
             <motion.p
@@ -87,8 +89,7 @@ export default function LandingPage() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl"
             >
-              Uma plataforma moderna de comunicação em tempo real com inteligência artificial integrada.
-              Converse com amigos, compartilhe ideias e conte com assistência IA quando precisar.
+              {t('landing.subtitle')}
             </motion.p>
 
             <motion.div
@@ -109,7 +110,7 @@ export default function LandingPage() {
                     <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                     <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
-                  <span className="relative">Entrar com Google</span>
+                  <span className="relative">{t('landing.google')}</span>
                 </div>
               </button>
 
@@ -120,7 +121,7 @@ export default function LandingPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative flex items-center gap-3">
                   <Github className="w-6 h-6" />
-                  <span className="relative">Entrar com GitHub</span>
+                  <span className="relative">{t('landing.github')}</span>
                 </div>
               </button>
             </motion.div>
@@ -138,20 +139,20 @@ export default function LandingPage() {
             {[
               {
                 icon: <Zap className="w-8 h-8" />,
-                title: 'Mensagens em Tempo Real',
-                description: 'Conversas instantâneas com WebSocket. Veja quando seus amigos estão digitando.',
+                title: t('landing.feature.realtime.title'),
+                description: t('landing.feature.realtime.desc'),
                 color: 'from-yellow-400 to-orange-400'
               },
               {
                 icon: <Sparkles className="w-8 h-8" />,
-                title: 'Assistente com IA',
-                description: 'Conte com inteligência artificial integrada para auxiliar em suas conversas.',
+                title: t('landing.feature.ai.title'),
+                description: t('landing.feature.ai.desc'),
                 color: 'from-purple-400 to-pink-400'
               },
               {
                 icon: <Shield className="w-8 h-8" />,
-                title: 'Seguro e Privado',
-                description: 'Autenticação OAuth2 segura. Suas conversas são privadas e criptografadas.',
+                title: t('landing.feature.secure.title'),
+                description: t('landing.feature.secure.desc'),
                 color: 'from-blue-400 to-cyan-400'
               }
             ].map((feature, index) => (
@@ -184,15 +185,15 @@ export default function LandingPage() {
             <div className="absolute inset-0 bg-black/20"></div>
             <div className="relative z-10">
               <Users className="w-16 h-16 mx-auto mb-6" />
-              <h2 className="text-4xl font-bold mb-4">Pronto para começar?</h2>
+              <h2 className="text-4xl font-bold mb-4">{t('landing.cta.title')}</h2>
               <p className="text-xl mb-8 text-purple-100">
-                Entre agora e conecte-se com amigos de forma inteligente
+                {t('landing.cta.subtitle')}
               </p>
               <button
                 onClick={handleGoogleLogin}
                 className="px-10 py-4 bg-white text-purple-600 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all hover:scale-105 hover:shadow-2xl"
               >
-                Começar Agora
+                {t('landing.cta.button')}
               </button>
             </div>
           </motion.div>
