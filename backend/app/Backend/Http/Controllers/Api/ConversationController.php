@@ -152,6 +152,67 @@ class ConversationController extends Controller
         return response()->json(['conversation' => $result['conversation']]);
     }
 
+    // Search messages across conversations
+    public function search(Request $request)
+    {
+        $request->validate([
+            'q' => 'required|string|min:1',
+        ]);
+
+        $user = Auth::user();
+
+        $conversations = $this->conversationRepository->getUserConversations($user->id);
+        $conversationIds = $conversations->pluck('id')->values();
+
+        if ($conversationIds->isEmpty()) {
+            return response()->json(['conversations' => []]);
+        }
+
+        $messages = $this->messageRepository
+            ->searchMessages($request->q, 100)
+            ->filter(fn($message) => $conversationIds->contains($message->conversation_id));
+
+        $conversationMap = $conversations->keyBy('id');
+
+        $results = $messages
+            ->groupBy('conversation_id')
+            ->map(function ($group, $conversationId) use ($conversationMap, $user) {
+                $conversation = $conversationMap->get((int) $conversationId);
+
+                if (!$conversation) {
+                    return null;
+                }
+
+                $otherParticipants = $conversation->participants->where('id', '!=', $user->id);
+                $name = $conversation->type === 'private'
+                    ? ($otherParticipants->first()->name ?? 'Unknown')
+                    : $conversation->name;
+
+                $matchedMessage = $group->sortByDesc('created_at')->first();
+
+                return [
+                    'id' => $conversation->id,
+                    'type' => $conversation->type,
+                    'name' => $name,
+                    'participants' => $otherParticipants->values(),
+                    'matched_message' => $matchedMessage ? [
+                        'id' => $matchedMessage->id,
+                        'content' => $matchedMessage->content,
+                        'created_at' => $matchedMessage->created_at,
+                        'user' => $matchedMessage->user ? [
+                            'id' => $matchedMessage->user->id,
+                            'name' => $matchedMessage->user->name,
+                        ] : null,
+                    ] : null,
+                    'updated_at' => $conversation->updated_at,
+                ];
+            })
+            ->filter()
+            ->values();
+
+        return response()->json(['conversations' => $results]);
+    }
+
     // Delete conversation
     public function destroy($id)
     {

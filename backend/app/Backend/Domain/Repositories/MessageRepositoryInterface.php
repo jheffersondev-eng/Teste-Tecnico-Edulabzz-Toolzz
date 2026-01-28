@@ -14,4 +14,6 @@ interface MessageRepositoryInterface
     public function create(array $data): Message;
     
     public function getRecentMessages(int $conversationId, int $limit = 10): Collection;
+
+    public function searchMessages(string $term, int $limit = 50): Collection;
 }
