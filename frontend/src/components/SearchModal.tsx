@@ -64,7 +64,7 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
   const searchUsers = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/api/users/search?query=${searchQuery}`);
+      const response = await api.get(`/api/users/search?q=${searchQuery}`);
       setSearchResults(response.data.users);
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
