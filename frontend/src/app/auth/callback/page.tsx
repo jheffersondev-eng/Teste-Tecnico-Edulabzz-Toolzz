@@ -10,10 +10,14 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const token = searchParams.get('token')
+    const challenge = searchParams.get('challenge')
     
     if (token) {
       localStorage.setItem('token', token)
+      localStorage.setItem('auth_token', token)
       router.push('/dashboard')
+    } else if (challenge) {
+      router.push(`/auth/2fa?challenge=${challenge}`)
     } else {
       router.push('/')
     }
