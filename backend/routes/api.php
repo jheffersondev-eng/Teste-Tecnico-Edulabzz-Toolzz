@@ -37,7 +37,7 @@ Route::get('/health', function () {
         'uptime' => $uptime,
         'db' => $dbStatus,
     ]);
-});
+    }); 
 
 Route::get('/metrics', function () {
     $total = (int) Cache::get('metrics:requests_total', 0);
@@ -53,7 +53,7 @@ Route::get('/metrics', function () {
         'requests_5xx' => $errors5xx,
         'avg_response_time_ms' => $avgMs,
     ]);
-});
+}); 
 
 Route::post('/auth/2fa/verify', [TwoFactorAuthController::class, 'verify']);
 Route::post('/auth/register', [RegisterController::class, 'register']);

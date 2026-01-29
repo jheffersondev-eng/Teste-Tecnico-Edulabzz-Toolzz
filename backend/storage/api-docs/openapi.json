@@ -1,0 +1,659 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Chat API",
+        "description": "API documentation for the Chat application",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost",
+            "description": "Local"
+        }
+    ],
+    "paths": {
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register user",
+                "operationId": "88ec130d04c5cfd12d3b16a8641fe764",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Registered"
+                    }
+                }
+            }
+        },
+        "/api/auth/2fa/verify": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Verify 2FA challenge",
+                "operationId": "b14b6a9a4095d4b1e7d224d6215c4e1e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "challenge"
+                                ],
+                                "properties": {
+                                    "challenge": {
+                                        "type": "string"
+                                    },
+                                    "code": {
+                                        "type": "string"
+                                    },
+                                    "recovery_code": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Verified"
+                    }
+                }
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get current user",
+                "operationId": "f7fae2d9e2b5d2cd5a6b9e115d4d8b81",
+                "responses": {
+                    "200": {
+                        "description": "User"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users/search": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Search users",
+                "operationId": "84a854e343a9f4e793251765e1587816",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Users"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/conversations": {
+            "get": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "List conversations",
+                "operationId": "50aeffa9858d1af195965f93675b56cf",
+                "responses": {
+                    "200": {
+                        "description": "Conversations"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/conversations/{id}": {
+            "get": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Get conversation",
+                "operationId": "47e4a98cf7a13f1206facc59b3de8a61",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Conversation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Delete conversation",
+                "operationId": "2172736f369fc5fdf402cff67bc2f14d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/conversations/{id}/messages": {
+            "get": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "List messages",
+                "operationId": "c658f70510c2809ce0a3d366fcdeff16",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Messages"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Send message",
+                "operationId": "69bbd4448191ab7b1c1ea31f7c77a0a0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "content": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Message sent"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/conversations/ai": {
+            "post": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Create AI chat",
+                "operationId": "03be197f959e656d01cd1b981f9e2527",
+                "responses": {
+                    "200": {
+                        "description": "Conversation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/conversations/private": {
+            "post": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Create private chat",
+                "operationId": "8caeadc0fca08a7b2aa9dbabe2a88770",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "friend_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Conversation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/conversations/search": {
+            "get": {
+                "tags": [
+                    "Conversations"
+                ],
+                "summary": "Search conversations by message",
+                "operationId": "c57495a07866b7313342fab6271817fc",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Results"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/friendships": {
+            "post": {
+                "tags": [
+                    "Friendships"
+                ],
+                "summary": "Send friend request",
+                "operationId": "c163186a685209946d40c0901a52d8b7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "friend_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Request sent"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/friendships/pending": {
+            "get": {
+                "tags": [
+                    "Friendships"
+                ],
+                "summary": "Pending requests",
+                "operationId": "5b1a49f80162c43acc4597428fb22a48",
+                "responses": {
+                    "200": {
+                        "description": "Pending"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/friendships/{id}/accept": {
+            "put": {
+                "tags": [
+                    "Friendships"
+                ],
+                "summary": "Accept friend request",
+                "operationId": "2f59637cc939a93e0a07a4c75cd098bb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Accepted"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/friendships/{id}/reject": {
+            "delete": {
+                "tags": [
+                    "Friendships"
+                ],
+                "summary": "Reject friend request",
+                "operationId": "bf6ec3e7c2cdeaa5dcb26c69ee1f7809",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rejected"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/2fa/status": {
+            "get": {
+                "tags": [
+                    "2FA"
+                ],
+                "summary": "2FA status",
+                "operationId": "bb5bc51618f593a8a9a6f78eb7d43d2a",
+                "responses": {
+                    "200": {
+                        "description": "Status"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/2fa/enable": {
+            "post": {
+                "tags": [
+                    "2FA"
+                ],
+                "summary": "Enable 2FA",
+                "operationId": "c5c611a7814c3ece8b22cc92bd2689ef",
+                "responses": {
+                    "200": {
+                        "description": "Enabled"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/2fa/confirm": {
+            "post": {
+                "tags": [
+                    "2FA"
+                ],
+                "summary": "Confirm 2FA",
+                "operationId": "c6162351a939e6c3f8f1703d9b856b81",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "code": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Confirmed"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/2fa/disable": {
+            "post": {
+                "tags": [
+                    "2FA"
+                ],
+                "summary": "Disable 2FA",
+                "operationId": "64986300a59e167ba3d087ba49affd82",
+                "responses": {
+                    "200": {
+                        "description": "Disabled"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/2fa/recovery-codes": {
+            "post": {
+                "tags": [
+                    "2FA"
+                ],
+                "summary": "Regenerate recovery codes",
+                "operationId": "6e992940466399bffd6e75526ae4c7d3",
+                "responses": {
+                    "200": {
+                        "description": "Recovery codes"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/health": {
+            "get": {
+                "tags": [
+                    "System"
+                ],
+                "summary": "Health check",
+                "operationId": "14568646b306509f618a5b0b221041bc",
+                "responses": {
+                    "200": {
+                        "description": "Health status"
+                    }
+                }
+            }
+        },
+        "/api/metrics": {
+            "get": {
+                "tags": [
+                    "System"
+                ],
+                "summary": "Basic metrics",
+                "operationId": "d8d86fb45d4c4a2fbda04c41bbae8078",
+                "responses": {
+                    "200": {
+                        "description": "Metrics payload"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Authentication"
+        },
+        {
+            "name": "Users",
+            "description": "User management"
+        },
+        {
+            "name": "Conversations",
+            "description": "Chat conversations"
+        },
+        {
+            "name": "Friendships",
+            "description": "Friends and requests"
+        },
+        {
+            "name": "2FA",
+            "description": "Two-factor auth"
+        },
+        {
+            "name": "System",
+            "description": "System endpoints"
+        }
+    ]
+}

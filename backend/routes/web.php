@@ -3,6 +3,7 @@
 use Backend\Http\Controllers\Auth\OAuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
+use L5Swagger\Http\Controllers\SwaggerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,9 @@ Route::get('/register', function () {
     $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
     return redirect()->away("{$frontendUrl}/");
 });
+
+Route::get('/api/oauth2-callback', [SwaggerController::class, 'oauth2Callback'])
+    ->name('l5-swagger.default.oauth2_callback');
 
 // Broadcasting Authentication
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
