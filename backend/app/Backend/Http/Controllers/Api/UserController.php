@@ -41,7 +41,7 @@ class UserController extends Controller
         // Add friendship status
         $users = $users->map(function ($user) use ($currentUser) {
             $user->is_friend = $currentUser->isFriendsWith($user->id);
-            $user->has_pending_request = $currentUser->hasPendingRequestWith($user->id);
+            $user->pending_request = $currentUser->hasPendingRequestWith($user->id);
             return $user;
         });
 
