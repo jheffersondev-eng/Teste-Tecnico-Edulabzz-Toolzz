@@ -21,12 +21,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Install dependencies
-COPY composer.json composer.lock ./
-RUN composer install --no-interaction --optimize-autoloader --no-dev
-
 # Copy application
 COPY . .
+
+# Install dependencies (after app files are present)
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
+# Ensure Laravel can write to required paths
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Render provides PORT
 ENV PORT=10000
