@@ -17,12 +17,13 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '';
   const handleGoogleSignup = () => {
-    window.location.href = 'http://localhost/auth/google/redirect'
+    window.location.href = `${apiBaseUrl}/auth/google/redirect`;
   }
 
   const handleGithubSignup = () => {
-    window.location.href = 'http://localhost/auth/github/redirect'
+    window.location.href = `${apiBaseUrl}/auth/github/redirect`;
   }
 
   const handleRegister = async (e: React.FormEvent) => {
