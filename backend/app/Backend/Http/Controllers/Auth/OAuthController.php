@@ -101,13 +101,17 @@ class OAuthController extends Controller
      */
     private function ensureSessionUserId(int $userId, int $attempts = 0): void
     {
-        if (session('user_id') == $userId || $attempts >= 5) {
+        if (session('user_id') == $userId || $attempts >= 10) {
+            Log::debug('[OAuth] Sessão garantida após tentativas', ['attempts' => $attempts, 'session_user_id' => session('user_id')]);
             return;
         }
 
         session()->save();
         DB::table('sessions')->where('id', session()->getId())->update(['user_id' => $userId]);
         Log::debug('[OAuth] Tentativa recursiva de persistir user_id', ['attempt' => $attempts + 1, 'session_user_id' => session('user_id')]);
+
+        // Pequeno delay para garantir persistência
+        usleep(100000); // 0.1s
 
         $this->ensureSessionUserId($userId, $attempts + 1);
     }
