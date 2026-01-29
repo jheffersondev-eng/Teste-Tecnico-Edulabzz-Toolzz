@@ -21,12 +21,12 @@ Route::get('/', function () {
 });
 
 Route::get('/login', function () {
-    $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+    $frontendUrl = env('FRONTEND_URL');
     return redirect()->away("{$frontendUrl}/");
 })->name('login');
 
 Route::get('/register', function () {
-    $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+    $frontendUrl = env('FRONTEND_URL');
     return redirect()->away("{$frontendUrl}/");
 });
 

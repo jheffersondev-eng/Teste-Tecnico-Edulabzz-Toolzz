@@ -47,7 +47,7 @@ class OAuthController extends Controller
             );
 
             // Login user
-            $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+            $frontendUrl = env('FRONTEND_URL');
             $twoFactorRequired = $user->hasEnabledTwoFactorAuthentication();
 
             if ($twoFactorRequired) {
