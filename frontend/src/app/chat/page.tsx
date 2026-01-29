@@ -87,8 +87,8 @@ export default function ChatPage() {
 
       return () => {
         try {
-          Echo.leave(`chat.${currentChatId}`);
-          Echo.leave(`typing.${currentChatId}`);
+          Echo?.leave(`chat.${currentChatId}`);
+          Echo?.leave(`typing.${currentChatId}`);
           console.log('🔌 Disconnected from channels');
         } catch (err) {
           console.warn('Error leaving channels:', err);
