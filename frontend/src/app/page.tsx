@@ -21,12 +21,13 @@ export default function LandingPage() {
     }
   }, [router]);
 
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '';
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost/auth/google/redirect';
+    window.location.href = `${apiBaseUrl}/auth/google/redirect`;
   };
 
   const handleGithubLogin = () => {
-    window.location.href = 'http://localhost/auth/github/redirect';
+    window.location.href = `${apiBaseUrl}/auth/github/redirect`;
   };
 
   if (!mounted) return null;
