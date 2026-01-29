@@ -45,10 +45,16 @@ class UserRepository implements UserRepositoryInterface
 
     public function search(string $term): Collection
     {
-        return User::where('name', 'LIKE', "%{$term}%")
-            ->orWhere('email', 'LIKE', "%{$term}%")
-            ->limit(10)
-            ->get();
+        try {
+            return User::search($term)
+                ->take(10)
+                ->get();
+        } catch (\Throwable $e) {
+            return User::where('name', 'LIKE', "%{$term}%")
+                ->orWhere('email', 'LIKE', "%{$term}%")
+                ->limit(10)
+                ->get();
+        }
     }
 
     public function findOrCreateFromOAuth(string $provider, string $providerId, array $userData): User

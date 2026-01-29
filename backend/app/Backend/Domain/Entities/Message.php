@@ -4,10 +4,11 @@ namespace Backend\Domain\Entities;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Message extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $fillable = [
         'conversation_id',
@@ -22,6 +23,23 @@ class Message extends Model
     ];
 
     protected $with = ['user'];
+
+    public function searchableAs(): string
+    {
+        return 'messages';
+    }
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'conversation_id' => $this->conversation_id,
+            'user_id' => $this->user_id,
+            'content' => $this->content,
+            'type' => $this->type,
+            'created_at' => $this->created_at?->toIso8601String(),
+        ];
+    }
 
     // Relationship: The conversation this message belongs to
     public function conversation()

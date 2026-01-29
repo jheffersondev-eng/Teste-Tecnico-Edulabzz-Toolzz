@@ -35,4 +35,18 @@ class MessageRepository implements MessageRepositoryInterface
             ->reverse()
             ->values();
     }
+
+    public function searchMessages(string $term, int $limit = 50): Collection
+    {
+        try {
+            return Message::search($term)
+                ->take($limit)
+                ->get();
+        } catch (\Throwable $e) {
+            return Message::where('content', 'LIKE', "%{$term}%")
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get();
+        }
+    }
 }

@@ -17,11 +17,26 @@ interface Conversation {
   id: number;
   type: string;
   name: string;
+  participants?: Array<{ id: number; name: string }>;
   latest_message: {
     content: string;
     created_at: string;
   } | null;
   unread_count: number;
+  updated_at: string;
+}
+
+interface ConversationSearchResult {
+  id: number;
+  type: string;
+  name: string;
+  participants: Array<{ id: number; name: string }>;
+  matched_message: {
+    id: number | string;
+    content: string;
+    created_at: string;
+    user: { id: number; name: string } | null;
+  } | null;
   updated_at: string;
 }
 
@@ -34,6 +49,9 @@ export default function DashboardPage() {
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [deletingConversationId, setDeletingConversationId] = useState<number | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+  const [chatSearch, setChatSearch] = useState('');
+  const [chatSearchResults, setChatSearchResults] = useState<ConversationSearchResult[]>([]);
+  const [chatSearchLoading, setChatSearchLoading] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -45,6 +63,31 @@ export default function DashboardPage() {
     loadUser();
     loadConversations();
   }, [router]);
+
+  useEffect(() => {
+    const term = chatSearch.trim();
+
+    if (term.length < 2) {
+      setChatSearchResults([]);
+      return;
+    }
+
+    const timeout = setTimeout(async () => {
+      try {
+        setChatSearchLoading(true);
+        const response = await api.get('/api/conversations/search', {
+          params: { q: term },
+        });
+        setChatSearchResults(response.data.conversations ?? []);
+      } catch (error) {
+        console.error('Erro ao pesquisar conversas:', error);
+      } finally {
+        setChatSearchLoading(false);
+      }
+    }, 350);
+
+    return () => clearTimeout(timeout);
+  }, [chatSearch]);
 
   const loadUser = async () => {
     try {
@@ -97,6 +140,18 @@ export default function DashboardPage() {
       console.error('Erro ao excluir conversa:', error);
     } finally {
       setDeletingConversationId(null);
+    }
+  };
+
+  const openConversation = (conversation: { id: number; type: string; participants?: Array<{ id: number }> }) => {
+    if (conversation.type === 'ai') {
+      router.push(`/chat/${conversation.id}`);
+      return;
+    }
+
+    const friendId = conversation.participants?.[0]?.id;
+    if (friendId) {
+      router.push(`/chat/user/${friendId}`);
     }
   };
 
@@ -186,13 +241,7 @@ export default function DashboardPage() {
                   >
                     <button
                       onClick={() => {
-                        if (conversation.type === 'ai') {
-                          router.push(`/chat/${conversation.id}`);
-                        } else {
-                          // Para chat privado, pegar o ID do outro participante
-                          const friendId = conversation.participants?.[0]?.id;
-                          router.push(`/chat/user/${friendId}`);
-                        }
+                        openConversation(conversation);
                       }}
                       className="w-full p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all text-left"
                     >
@@ -248,7 +297,66 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center bg-gray-900">
+      <div className="flex-1 flex flex-col items-center justify-center bg-gray-900">
+        <div className="w-full max-w-2xl px-6 mb-10">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              value={chatSearch}
+              onChange={(e) => setChatSearch(e.target.value)}
+              placeholder="Pesquisar mensagens em chats..."
+              className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+
+          {(chatSearchLoading || chatSearchResults.length > 0 || chatSearch.trim().length >= 2) && (
+            <div className="mt-4 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+              {chatSearchLoading ? (
+                <div className="p-4 text-sm text-gray-400">Pesquisando...</div>
+              ) : chatSearchResults.length === 0 ? (
+                <div className="p-4 text-sm text-gray-400">Nenhuma conversa encontrada.</div>
+              ) : (
+                <div className="divide-y divide-gray-700">
+                  {chatSearchResults.map((result) => (
+                    <button
+                      key={result.id}
+                      onClick={() => openConversation(result)}
+                      className="w-full text-left p-4 hover:bg-gray-700 transition-colors"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          {result.type === 'ai' ? (
+                            <Bot className="w-5 h-5" />
+                          ) : (
+                            <span className="font-bold">{result.name.charAt(0)}</span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="font-semibold truncate">{result.name}</p>
+                            {result.matched_message && (
+                              <span className="text-xs text-gray-400">
+                                {new Date(result.matched_message.created_at).toLocaleDateString('pt-BR')}
+                              </span>
+                            )}
+                          </div>
+                          {result.matched_message && (
+                            <p className="text-sm text-gray-300 truncate">
+                              {result.matched_message.user?.name ? `${result.matched_message.user.name}: ` : ''}
+                              {result.matched_message.content}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         <div className="text-center">
           <motion.div
             initial={{ scale: 0 }}

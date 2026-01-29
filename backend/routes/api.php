@@ -21,6 +21,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // User search
     Route::get('/users/search', [UserController::class, 'search']);
 
+    // Search conversations by message content
+    Route::get('/conversations/search', [ConversationController::class, 'search']);
+
     // Friendships
     Route::post('/friendships', [FriendshipController::class, 'sendRequest']);
     Route::get('/friendships', [FriendshipController::class, 'friends']);

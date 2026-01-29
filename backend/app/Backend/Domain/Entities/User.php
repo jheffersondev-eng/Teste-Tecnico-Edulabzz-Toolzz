@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Scout\Searchable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Searchable;
 
     protected $fillable = [
         'name',
@@ -28,6 +29,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function searchableAs(): string
+    {
+        return 'users';
+    }
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+        ];
+    }
 
     // Relationship: Conversations this user participates in
     public function conversations()
@@ -98,12 +113,4 @@ class User extends Authenticatable
         })->where('status', 'pending')->exists();
     }
 
-    // Search users
-    public static function search($term)
-    {
-        return static::where('name', 'LIKE', "%{$term}%")
-            ->orWhere('email', 'LIKE', "%{$term}%")
-            ->limit(10)
-            ->get();
-    }
 }
