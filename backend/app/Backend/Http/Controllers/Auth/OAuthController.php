@@ -20,7 +20,6 @@ class OAuthController extends Controller
      */
     public function redirect(string $provider)
     {
-        dd('chegou no controller', env('GOOGLE_CLIENT_ID'), env('GOOGLE_CLIENT_SECRET'), env('GOOGLE_REDIRECT_URI'));
         $this->validateProvider($provider);
         return Socialite::driver($provider)->redirect();
     }
@@ -30,7 +29,6 @@ class OAuthController extends Controller
      */
     public function callback(string $provider)
     {
-        dd('chegou no controller', env('GOOGLE_CLIENT_ID'), env('GOOGLE_CLIENT_SECRET'), env('GOOGLE_REDIRECT_URI'));
         $this->validateProvider($provider);
 
         try {
