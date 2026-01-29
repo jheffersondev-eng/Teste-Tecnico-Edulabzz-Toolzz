@@ -58,7 +58,7 @@ export default function ChatPage() {
     subscribeToChannel();
 
     return () => {
-      if (conversationId) {
+      if (conversationId && Echo) {
         Echo.leave(`chat.${conversationId}`);
       }
     };
