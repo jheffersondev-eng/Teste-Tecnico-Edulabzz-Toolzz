@@ -33,23 +33,24 @@ class OAuthController extends Controller
         $this->validateProvider($provider);
 
         try {
-            $socialUser = Socialite::driver($provider)->user();
-            // Find or create user
-            $user = $this->userRepository->findOrCreateFromOAuth(
-                $provider,
-                $socialUser->getId(),
-                [
-                    'name' => $socialUser->getName(),
-                    'email' => $socialUser->getEmail(),
-                ]
-            );
-            // Login user
+            $socialUser = Socialite::driver($provider)->stateless()->user();
             $frontendUrl = env('FRONTEND_URL');
-            $twoFactorRequired = $user->hasEnabledTwoFactorAuthentication();
+            $user = null;
 
+            DB::transaction(function () use ($provider, $socialUser, &$user) {
+                $user = $this->userRepository->findOrCreateFromOAuth(
+                    $provider,
+                    $socialUser->getId(),
+                    [
+                        'name' => $socialUser->getName(),
+                        'email' => $socialUser->getEmail(),
+                    ]
+                );
+            });
+
+            $twoFactorRequired = $user->hasEnabledTwoFactorAuthentication();
             if ($twoFactorRequired) {
                 $challenge = Str::random(64);
-
                 DB::table('two_factor_challenges')->insert([
                     'user_id' => $user->id,
                     'token' => $challenge,
@@ -57,30 +58,12 @@ class OAuthController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-
-                Log::info('CALLBACK GOOGLE', [
-                    'session_id' => session()->getId(),
-                    'user' => auth()->user(),
-                    'logged' => auth()->check(),
-                ]);
-
                 return redirect()->away("{$frontendUrl}/auth/callback?challenge={$challenge}");
             }
 
             Auth::login($user, true);
-
-            Log::info('CALLBACK GOOGLE', [
-                'session_id' => session()->getId(),
-                'user' => auth()->user(),
-                'logged' => auth()->check(),
-            ]);
-
-            // Generate Sanctum token for API
             $token = $user->createToken('oauth-token')->plainTextToken;
-
-            // Redirect to frontend with token
             return redirect()->away("{$frontendUrl}/auth/callback?token={$token}");
-
         } catch (\Exception $e) {
             return redirect('/login')->with('error', 'OAuth authentication failed: ' . $e->getMessage());
         }
