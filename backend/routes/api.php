@@ -3,6 +3,8 @@
 use Backend\Http\Controllers\Api\ConversationController;
 use Backend\Http\Controllers\Api\FriendshipController;
 use Backend\Http\Controllers\Api\UserController;
+use Backend\Http\Controllers\Api\TwoFactorController;
+use Backend\Http\Controllers\Auth\TwoFactorAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,8 @@ Route::get('/test', function () {
     ]);
 });
 
+Route::post('/auth/2fa/verify', [TwoFactorAuthController::class, 'verify']);
+
 Route::middleware('auth:sanctum')->group(function () {
     // Current user
     Route::get('/user', [UserController::class, 'show']);
@@ -23,6 +27,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Search conversations by message content
     Route::get('/conversations/search', [ConversationController::class, 'search']);
+
+    // Two-factor authentication
+    Route::get('/2fa/status', [TwoFactorController::class, 'status']);
+    Route::post('/2fa/enable', [TwoFactorController::class, 'enable']);
+    Route::post('/2fa/confirm', [TwoFactorController::class, 'confirm']);
+    Route::post('/2fa/disable', [TwoFactorController::class, 'disable']);
+    Route::post('/2fa/recovery-codes', [TwoFactorController::class, 'recoveryCodes']);
 
     // Friendships
     Route::post('/friendships', [FriendshipController::class, 'sendRequest']);

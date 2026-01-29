@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Backend\Domain\Repositories\UserRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class OAuthController extends Controller
@@ -45,13 +47,29 @@ class OAuthController extends Controller
             );
 
             // Login user
+            $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+            $twoFactorRequired = $user->hasEnabledTwoFactorAuthentication();
+
+            if ($twoFactorRequired) {
+                $challenge = Str::random(64);
+
+                DB::table('two_factor_challenges')->insert([
+                    'user_id' => $user->id,
+                    'token' => $challenge,
+                    'expires_at' => now()->addMinutes(10),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                return redirect()->away("{$frontendUrl}/auth/callback?challenge={$challenge}");
+            }
+
             Auth::login($user, true);
 
             // Generate Sanctum token for API
             $token = $user->createToken('oauth-token')->plainTextToken;
 
             // Redirect to frontend with token
-            $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
             return redirect()->away("{$frontendUrl}/auth/callback?token={$token}");
 
         } catch (\Exception $e) {

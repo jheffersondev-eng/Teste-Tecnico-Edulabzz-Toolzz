@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { MessageCircle, Search, Plus, Bot, UserPlus, Users, LogOut } from 'lucide-react';
+import { MessageCircle, Search, Plus, Bot, UserPlus, Users, LogOut, Shield } from 'lucide-react';
 import api from '@/lib/api';
 import SearchModal from '@/components/SearchModal';
 
@@ -182,6 +182,13 @@ export default function DashboardPage() {
               title="Sair"
             >
               <LogOut className="w-5 h-5 text-gray-400" />
+            </button>
+            <button
+              onClick={() => router.push('/settings/2fa')}
+              className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+              title="Segurança (2FA)"
+            >
+              <Shield className="w-5 h-5 text-gray-400" />
             </button>
           </div>
           
