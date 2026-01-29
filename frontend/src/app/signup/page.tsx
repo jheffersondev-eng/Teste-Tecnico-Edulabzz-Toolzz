@@ -2,15 +2,21 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import api from '@/lib/api'
 import { Mail, Lock, User, Github, Chrome, ArrowRight } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { useI18n } from '@/lib/i18n'
 
 export default function SignupPage() {
   const { t } = useI18n()
+  const router = useRouter()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const handleGoogleSignup = () => {
     window.location.href = 'http://localhost/auth/google/redirect'
@@ -18,6 +24,31 @@ export default function SignupPage() {
 
   const handleGithubSignup = () => {
     window.location.href = 'http://localhost/auth/github/redirect'
+  }
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+
+    try {
+      const response = await api.post('/api/auth/register', {
+        name,
+        email,
+        password,
+        password_confirmation: passwordConfirm,
+      })
+      const token = response.data.token
+      if (token) {
+        localStorage.setItem('token', token)
+        localStorage.setItem('auth_token', token)
+      }
+      router.push('/dashboard')
+    } catch (err: any) {
+      setError(err?.response?.data?.message || t('signup.error'))
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -67,7 +98,7 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleRegister}>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('signup.name')}
@@ -116,8 +147,31 @@ export default function SignupPage() {
               </div>
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('signup.passwordConfirm')}
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="password"
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <div className="text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
+              disabled={loading}
               className="group relative overflow-hidden w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center space-x-2"
             >
               <span className="relative z-10">{t('signup.submit')}</span>
@@ -128,7 +182,7 @@ export default function SignupPage() {
 
           <p className="text-center text-gray-600 dark:text-gray-400 text-sm">
             {t('signup.footer')}{' '}
-            <Link href="/login" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+            <Link href="/" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
               {t('signup.footer.link')}
             </Link>
           </p>

@@ -6,6 +6,7 @@ use Backend\Domain\Entities\User;
 use Backend\Domain\Repositories\UserRepositoryInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -59,6 +60,11 @@ class UserRepository implements UserRepositoryInterface
 
     public function findOrCreateFromOAuth(string $provider, string $providerId, array $userData): User
     {
+        $email = $userData['email'] ?? null;
+        if (!$email) {
+            $email = sprintf('%s@%s.oauth', $providerId, $provider);
+        }
+
         $user = User::where('oauth_provider', $provider)
             ->where('oauth_provider_id', $providerId)
             ->first();
@@ -66,9 +72,10 @@ class UserRepository implements UserRepositoryInterface
         if (!$user) {
             $user = User::create([
                 'name' => $userData['name'],
-                'email' => $userData['email'],
+                'email' => $email,
                 'oauth_provider' => $provider,
                 'oauth_provider_id' => $providerId,
+                'password' => Hash::make(Str::random(32)),
                 'email_verified_at' => now(),
             ]);
         }

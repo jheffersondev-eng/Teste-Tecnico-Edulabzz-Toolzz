@@ -5,6 +5,7 @@ use Backend\Http\Controllers\Api\FriendshipController;
 use Backend\Http\Controllers\Api\UserController;
 use Backend\Http\Controllers\Api\TwoFactorController;
 use Backend\Http\Controllers\Auth\TwoFactorAuthController;
+use Backend\Http\Controllers\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,7 @@ Route::get('/test', function () {
 });
 
 Route::post('/auth/2fa/verify', [TwoFactorAuthController::class, 'verify']);
+Route::post('/auth/register', [RegisterController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // Current user

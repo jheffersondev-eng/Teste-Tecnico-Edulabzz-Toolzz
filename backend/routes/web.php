@@ -19,6 +19,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/login', function () {
+    $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+    return redirect()->away("{$frontendUrl}/");
+})->name('login');
+
+Route::get('/register', function () {
+    $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+    return redirect()->away("{$frontendUrl}/");
+});
+
 // Broadcasting Authentication
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
