@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Backend\Domain\Repositories\UserRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -33,7 +34,6 @@ class OAuthController extends Controller
 
         try {
             $socialUser = Socialite::driver($provider)->user();
-            
             // Find or create user
             $user = $this->userRepository->findOrCreateFromOAuth(
                 $provider,
@@ -43,7 +43,6 @@ class OAuthController extends Controller
                     'email' => $socialUser->getEmail(),
                 ]
             );
-            
             // Login user
             $frontendUrl = env('FRONTEND_URL');
             $twoFactorRequired = $user->hasEnabledTwoFactorAuthentication();
@@ -59,10 +58,22 @@ class OAuthController extends Controller
                     'updated_at' => now(),
                 ]);
 
+                Log::info('CALLBACK GOOGLE', [
+                    'session_id' => session()->getId(),
+                    'user' => auth()->user(),
+                    'logged' => auth()->check(),
+                ]);
+
                 return redirect()->away("{$frontendUrl}/auth/callback?challenge={$challenge}");
             }
 
             Auth::login($user, true);
+
+            Log::info('CALLBACK GOOGLE', [
+                'session_id' => session()->getId(),
+                'user' => auth()->user(),
+                'logged' => auth()->check(),
+            ]);
 
             // Generate Sanctum token for API
             $token = $user->createToken('oauth-token')->plainTextToken;
