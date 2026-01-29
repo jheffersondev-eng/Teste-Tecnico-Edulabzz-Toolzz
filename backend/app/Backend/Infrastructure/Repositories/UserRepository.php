@@ -6,6 +6,7 @@ use Backend\Domain\Entities\User;
 use Backend\Domain\Repositories\UserRepositoryInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class UserRepository implements UserRepositoryInterface
@@ -25,8 +26,18 @@ class UserRepository implements UserRepositoryInterface
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         }
-
-        return User::create($data);
+        try {
+            $user = User::create($data);
+            Log::debug('[UserRepository] Usuário criado com sucesso', ['user' => $user]);
+            return $user;
+        } catch (\Exception $e) {
+            Log::error('[UserRepository] Erro ao criar usuário', [
+                'data' => $data,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
     }
 
     public function update(int $id, array $data): bool
