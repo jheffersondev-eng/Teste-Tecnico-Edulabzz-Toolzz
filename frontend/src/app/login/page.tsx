@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Mail, Lock, Github, Chrome, ArrowRight } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { useI18n } from '@/lib/i18n'
 
 export default function LoginPage() {
+  const { t } = useI18n()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -34,8 +36,8 @@ export default function LoginPage() {
                 </svg>
               </div>
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h1>
-            <p className="text-gray-600 dark:text-gray-400">Sign in to continue your conversations</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('login.title')}</h1>
+            <p className="text-gray-600 dark:text-gray-400">{t('login.subtitle')}</p>
           </div>
 
           {/* OAuth Buttons */}
@@ -45,7 +47,7 @@ export default function LoginPage() {
               className="group w-full flex items-center justify-center space-x-3 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 hover:scale-105 active:scale-95 font-medium text-gray-700 dark:text-gray-300 hover:border-blue-500 dark:hover:border-blue-400"
             >
               <Chrome className="h-5 w-5 group-hover:scale-110 transition-transform" />
-              <span>Continue with Google</span>
+              <span>{t('login.google')}</span>
             </button>
 
             <button
@@ -53,7 +55,7 @@ export default function LoginPage() {
               className="group w-full flex items-center justify-center space-x-3 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 hover:scale-105 active:scale-95 font-medium text-gray-700 dark:text-gray-300 hover:border-purple-500 dark:hover:border-purple-400"
             >
               <Github className="h-5 w-5 group-hover:scale-110 transition-transform" />
-              <span>Continue with GitHub</span>
+              <span>{t('login.github')}</span>
             </button>
           </div>
 
@@ -63,7 +65,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white dark:bg-gray-800 text-gray-500">or continue with email</span>
+              <span className="px-4 bg-white dark:bg-gray-800 text-gray-500">{t('login.divider')}</span>
             </div>
           </div>
 
@@ -71,7 +73,7 @@ export default function LoginPage() {
           <form className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Email
+                {t('login.email')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -87,7 +89,7 @@ export default function LoginPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Password
+                {t('login.password')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -105,7 +107,7 @@ export default function LoginPage() {
               type="submit"
               className="group relative overflow-hidden w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center space-x-2"
             >
-              <span className="relative z-10">Sign In</span>
+              <span className="relative z-10">{t('login.submit')}</span>
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform relative z-10" />
               <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
             </button>
@@ -113,9 +115,9 @@ export default function LoginPage() {
 
           {/* Footer */}
           <p className="text-center text-gray-600 dark:text-gray-400 text-sm">
-            Don't have an account?{' '}
+            {t('login.footer')}{' '}
             <Link href="/signup" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-              Sign up
+              {t('login.footer.link')}
             </Link>
           </p>
         </div>

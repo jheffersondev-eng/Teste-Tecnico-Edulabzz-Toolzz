@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, UserPlus, Check, Clock, Loader2 } from 'lucide-react';
 import api from '@/lib/api';
+import { useI18n } from '@/lib/i18n';
 
 interface User {
   id: number;
@@ -28,6 +29,7 @@ interface SearchModalProps {
 }
 
 export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps) {
+  const { t } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [pendingRequests, setPendingRequests] = useState<FriendRequest[]>([]);
@@ -123,7 +125,7 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
         {/* Header */}
         <div className="p-6 border-b border-gray-700">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold">Amigos</h2>
+            <h2 className="text-2xl font-bold">{t('modal.friends.title')}</h2>
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
@@ -144,7 +146,7 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
             >
               <div className="flex items-center justify-center gap-2">
                 <Search className="w-4 h-4" />
-                Buscar
+                {t('modal.friends.search')}
               </div>
             </button>
             <button
@@ -157,7 +159,7 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
             >
               <div className="flex items-center justify-center gap-2">
                 <Clock className="w-4 h-4" />
-                Solicitações
+                {t('modal.friends.requests')}
                 {pendingRequests.length > 0 && (
                   <span className="absolute -top-1 -right-1 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">
                     {pendingRequests.length}
@@ -185,7 +187,7 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Buscar por nome ou email..."
+                    placeholder={t('modal.friends.search.placeholder')}
                     className="w-full pl-10 pr-4 py-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     autoFocus
                   />
@@ -215,12 +217,12 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
                         {user.is_friend ? (
                           <div className="flex items-center gap-2 text-green-400 text-sm">
                             <Check className="w-4 h-4" />
-                            Amigo
+                            {t('modal.friends.friend')}
                           </div>
                         ) : user.pending_request ? (
                           <div className="flex items-center gap-2 text-yellow-400 text-sm">
                             <Clock className="w-4 h-4" />
-                            Pedido enviado
+                            {t('modal.friends.pending')}
                           </div>
                         ) : (
                           <button
@@ -233,7 +235,7 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
                             ) : (
                               <UserPlus className="w-4 h-4" />
                             )}
-                            Adicionar
+                            {t('modal.friends.add')}
                           </button>
                         )}
                       </motion.div>
@@ -241,12 +243,12 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
                   ) : searchQuery.length >= 2 ? (
                     <div className="text-center py-8 text-gray-400">
                       <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>Nenhum usuário encontrado</p>
+                      <p>{t('modal.friends.search.empty')}</p>
                     </div>
                   ) : (
                     <div className="text-center py-8 text-gray-400">
                       <Search className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>Digite pelo menos 2 caracteres para buscar</p>
+                      <p>{t('modal.friends.search.helper')}</p>
                     </div>
                   )}
                 </div>
@@ -273,7 +275,7 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold">{request.user?.name || 'Usuário desconhecido'}</p>
+                          <p className="font-semibold">{request.user?.name || t('modal.friends.unknownUser')}</p>
                           <p className="text-sm text-gray-400 truncate">{request.user?.email || ''}</p>
                         </div>
                         <div className="flex gap-2">
@@ -281,7 +283,7 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
                             onClick={() => acceptRequest(request.id)}
                             disabled={actionLoading === request.id}
                             className="p-2 bg-green-600 hover:bg-green-700 rounded-lg transition-all hover:scale-105 disabled:opacity-50"
-                            title="Aceitar"
+                            title={t('modal.friends.accept')}
                           >
                             {actionLoading === request.id ? (
                               <Loader2 className="w-5 h-5 animate-spin" />
@@ -293,7 +295,7 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
                             onClick={() => rejectRequest(request.id)}
                             disabled={actionLoading === request.id}
                             className="p-2 bg-red-600 hover:bg-red-700 rounded-lg transition-all hover:scale-105 disabled:opacity-50"
-                            title="Rejeitar"
+                            title={t('modal.friends.reject')}
                           >
                             <X className="w-5 h-5" />
                           </button>
@@ -303,7 +305,7 @@ export default function SearchModal({ onClose, onFriendAdded }: SearchModalProps
                   ) : (
                     <div className="text-center py-8 text-gray-400">
                       <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>Nenhuma solicitação pendente</p>
+                      <p>{t('modal.friends.requests.empty')}</p>
                     </div>
                   )}
                 </div>

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Send, Loader2 } from 'lucide-react';
 import api from '@/lib/api';
 import Echo from '@/lib/echo';
+import { useI18n } from '@/lib/i18n';
 
 interface Message {
   id: number | string;
@@ -29,8 +30,10 @@ interface Conversation {
 
 export default function UserChatPage() {
   const router = useRouter();
+  const { t, locale } = useI18n();
   const params = useParams();
   const userId = params.userId as string;
+  const localeMap: Record<string, string> = { en: 'en-US', pt: 'pt-BR', es: 'es-ES' };
   
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [friendName, setFriendName] = useState<string>('');
@@ -75,7 +78,7 @@ export default function UserChatPage() {
       const friend = response.data.conversation.participants?.find(
         (p: any) => p.id !== currentUserId
       );
-      setFriendName(friend?.name || 'Amigo');
+      setFriendName(friend?.name || t('modal.friends.friend'));
       
       loadMessages(response.data.conversation.id);
       subscribeToChannel(response.data.conversation.id);
@@ -131,7 +134,7 @@ export default function UserChatPage() {
       type: 'user',
       user: {
         id: currentUserId,
-        name: 'Você'
+        name: t('chat.you')
       },
       created_at: new Date().toISOString(),
       status: 'sending',
@@ -195,7 +198,7 @@ export default function UserChatPage() {
             
             <div>
               <h1 className="text-xl font-bold">{friendName}</h1>
-              <p className="text-sm text-gray-400">Conversa privada</p>
+              <p className="text-sm text-gray-400">{t('chat.private.title')}</p>
             </div>
           </div>
         </div>
@@ -222,7 +225,7 @@ export default function UserChatPage() {
                 <p className="whitespace-pre-wrap break-words">{message.content}</p>
                 <div className="flex items-center justify-end gap-1 mt-1">
                   <p className="text-xs text-gray-300">
-                    {new Date(message.created_at).toLocaleTimeString('pt-BR', {
+                    {new Date(message.created_at).toLocaleTimeString(localeMap[locale] || locale, {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
@@ -254,7 +257,7 @@ export default function UserChatPage() {
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Digite sua mensagem..."
+            placeholder={t('chat.input.private.placeholder')}
             className="flex-1 px-4 py-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
           <button

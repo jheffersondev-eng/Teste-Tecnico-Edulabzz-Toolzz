@@ -3,10 +3,12 @@
 import { useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { useI18n } from '@/lib/i18n'
 
 export default function AuthCallbackPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { t } = useI18n()
 
   useEffect(() => {
     const token = searchParams.get('token')
@@ -27,7 +29,7 @@ export default function AuthCallbackPage() {
     <div className="min-h-screen bg-gray-900 flex items-center justify-center">
       <div className="text-center space-y-4">
         <Loader2 className="h-12 w-12 animate-spin text-purple-500 mx-auto" />
-        <p className="text-lg text-white">Autenticando...</p>
+        <p className="text-lg text-white">{t('auth.callback.loading')}</p>
       </div>
     </div>
   )

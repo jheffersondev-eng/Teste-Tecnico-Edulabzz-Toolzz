@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Mail, Lock, User, Github, Chrome, ArrowRight } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { useI18n } from '@/lib/i18n'
 
 export default function SignupPage() {
+  const { t } = useI18n()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -34,8 +36,8 @@ export default function SignupPage() {
                 </svg>
               </div>
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create Account</h1>
-            <p className="text-gray-600 dark:text-gray-400">Start your AI conversation journey</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('signup.title')}</h1>
+            <p className="text-gray-600 dark:text-gray-400">{t('signup.subtitle')}</p>
           </div>
 
           <div className="space-y-3">
@@ -44,7 +46,7 @@ export default function SignupPage() {
               className="group w-full flex items-center justify-center space-x-3 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 hover:scale-105 active:scale-95 font-medium text-gray-700 dark:text-gray-300 hover:border-blue-500 dark:hover:border-blue-400"
             >
               <Chrome className="h-5 w-5 group-hover:scale-110 transition-transform" />
-              <span>Sign up with Google</span>
+              <span>{t('signup.google')}</span>
             </button>
 
             <button
@@ -52,7 +54,7 @@ export default function SignupPage() {
               className="group w-full flex items-center justify-center space-x-3 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 hover:scale-105 active:scale-95 font-medium text-gray-700 dark:text-gray-300 hover:border-purple-500 dark:hover:border-purple-400"
             >
               <Github className="h-5 w-5 group-hover:scale-110 transition-transform" />
-              <span>Sign up with GitHub</span>
+              <span>{t('signup.github')}</span>
             </button>
           </div>
 
@@ -61,14 +63,14 @@ export default function SignupPage() {
               <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white dark:bg-gray-800 text-gray-500">or sign up with email</span>
+              <span className="px-4 bg-white dark:bg-gray-800 text-gray-500">{t('signup.divider')}</span>
             </div>
           </div>
 
           <form className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Name
+                {t('signup.name')}
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -84,7 +86,7 @@ export default function SignupPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Email
+                {t('signup.email')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -100,7 +102,7 @@ export default function SignupPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Password
+                {t('signup.password')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -118,16 +120,16 @@ export default function SignupPage() {
               type="submit"
               className="group relative overflow-hidden w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center space-x-2"
             >
-              <span className="relative z-10">Create Account</span>
+              <span className="relative z-10">{t('signup.submit')}</span>
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform relative z-10" />
               <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
             </button>
           </form>
 
           <p className="text-center text-gray-600 dark:text-gray-400 text-sm">
-            Already have an account?{' '}
+            {t('signup.footer')}{' '}
             <Link href="/login" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-              Sign in
+              {t('signup.footer.link')}
             </Link>
           </p>
         </div>
