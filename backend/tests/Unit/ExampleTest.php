@@ -2,15 +2,27 @@
 
 namespace Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
+use Backend\Domain\Entities\User;
+use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     */
-    public function test_that_true_is_true(): void
+    public function test_user_searchable_fields_are_exposed(): void
     {
-        $this->assertTrue(true);
+        $user = new User();
+        $user->id = 10;
+        $user->name = 'Ada Lovelace';
+        $user->email = 'ada@example.com';
+
+        $this->assertSame('users', $user->searchableAs());
+
+        $this->assertSame(
+            [
+                'id' => 10,
+                'name' => 'Ada Lovelace',
+                'email' => 'ada@example.com',
+            ],
+            $user->toSearchableArray()
+        );
     }
 }
