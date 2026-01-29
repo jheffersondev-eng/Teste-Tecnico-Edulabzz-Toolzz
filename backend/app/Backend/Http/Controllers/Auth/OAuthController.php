@@ -80,9 +80,9 @@ class OAuthController extends Controller
 
             Log::debug('[OAuth] Logando usuário', ['user_id' => $user->id]);
             Auth::login($user, true);
-            // Força persistência do user_id na sessão e salva
             session()->put('user_id', $user->id);
             session()->save();
+            DB::table('sessions')->where('id', session()->getId())->update(['user_id' => $user->id]);
 
             $token = $user->createToken('oauth-token')->plainTextToken;
             Log::debug('[OAuth] Token gerado e redirecionando', ['user_id' => $user->id, 'token' => $token]);
