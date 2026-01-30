@@ -24,18 +24,15 @@ class TwoFactorAuthController extends Controller
             ->first();
 
         if (!$challenge) {
-            return response()->json(['message' => 'Desafio expirado ou inválido.'], 422);
+            return response()->json(['message' => 'Desafio expirou ou é inválido.'], 422);
         }
 
-        /** @var User $user */
         $user = User::find($challenge->user_id);
-
         if (!$user || !$user->hasEnabledTwoFactorAuthentication()) {
             return response()->json(['message' => '2FA não habilitado.'], 422);
         }
 
         $valid = false;
-
         if ($request->filled('recovery_code')) {
             $codes = $user->recoveryCodes();
             if (in_array($request->recovery_code, $codes, true)) {
@@ -43,22 +40,25 @@ class TwoFactorAuthController extends Controller
                 $valid = true;
             }
         }
-
         if (!$valid && $request->filled('code')) {
             $valid = $provider->verify(
                 decrypt($user->two_factor_secret),
                 $request->code
             );
         }
-
         if (!$valid) {
             return response()->json(['message' => 'Código inválido.'], 422);
         }
-
         DB::table('two_factor_challenges')->where('id', $challenge->id)->delete();
-
         $token = $user->createToken('oauth-token')->plainTextToken;
-
-        return response()->json(['token' => $token]);
+        // 2FA passou, pode entrar!
+        return response()->json([
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
+        ]);
     }
 }

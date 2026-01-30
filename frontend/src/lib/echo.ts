@@ -14,25 +14,36 @@ if (typeof window !== 'undefined') {
   try {
     window.Pusher = Pusher;
 
-    console.log('🔌 Initializing Laravel Echo...');
+    const isProd = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
 
-    echoInstance = new Echo({
-      broadcaster: 'pusher',
-      key: 'chat-app-key',
-      wsHost: 'localhost',
-      wsPort: 6001,
-      forceTLS: false,
-      disableStats: true,
-      enabledTransports: ['ws', 'wss'],
-      cluster: 'mt1',
-      authEndpoint: 'http://localhost/broadcasting/auth',
-      auth: {
-        headers: {
-          Authorization: typeof localStorage !== 'undefined' ? `Bearer ${localStorage.getItem('auth_token')}` : '',
-          Accept: 'application/json',
+    if (isProd) {
+      // Configuração para produção (Vercel)
+      echoInstance = new Echo({
+        broadcaster: 'pusher',
+        key: 'chat-app-key',
+        cluster: 'mt1',
+        forceTLS: true,
+      });
+    } else {
+      // Configuração para localhost
+      echoInstance = new Echo({
+        broadcaster: 'pusher',
+        key: 'chat-app-key',
+        wsHost: 'localhost',
+        wsPort: 6001,
+        forceTLS: false,
+        disableStats: true,
+        enabledTransports: ['ws', 'wss'],
+        cluster: 'mt1',
+        authEndpoint: 'http://localhost/broadcasting/auth',
+        auth: {
+          headers: {
+            Authorization: typeof localStorage !== 'undefined' ? `Bearer ${localStorage.getItem('auth_token')}` : '',
+            Accept: 'application/json',
+          },
         },
-      },
-    });
+      });
+    }
 
     window.Echo = echoInstance;
     console.log('✅ Echo initialized successfully');

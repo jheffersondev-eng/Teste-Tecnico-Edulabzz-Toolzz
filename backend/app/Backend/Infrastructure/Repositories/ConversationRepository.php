@@ -46,25 +46,17 @@ class ConversationRepository implements ConversationRepositoryInterface
     public function delete(int $id): bool
     {
         $conversation = Conversation::find($id);
-        
         if (!$conversation) {
             return false;
         }
-
-        // Delete associated messages
         $conversation->messages()->delete();
-        
-        // Detach participants
         $conversation->participants()->detach();
-        
-        // Delete conversation
         return $conversation->delete();
     }
 
     public function attachParticipants(int $conversationId, array $userIds): void
     {
         $conversation = Conversation::find($conversationId);
-        
         if ($conversation) {
             $conversation->participants()->attach($userIds);
         }
@@ -73,7 +65,6 @@ class ConversationRepository implements ConversationRepositoryInterface
     public function markAsRead(int $conversationId, int $userId): void
     {
         $conversation = Conversation::find($conversationId);
-        
         if ($conversation) {
             $conversation->participants()
                 ->updateExistingPivot($userId, ['last_read_at' => now()]);
@@ -83,7 +74,6 @@ class ConversationRepository implements ConversationRepositoryInterface
     public function touch(int $conversationId): void
     {
         $conversation = Conversation::find($conversationId);
-        
         if ($conversation) {
             $conversation->touch();
         }

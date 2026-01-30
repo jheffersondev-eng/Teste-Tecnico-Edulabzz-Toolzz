@@ -25,22 +25,18 @@ class FriendshipRepository implements FriendshipRepositoryInterface
     public function updateStatus(int $id, string $status): bool
     {
         $friendship = Friendship::find($id);
-        
         if (!$friendship) {
             return false;
         }
-
         return $friendship->update(['status' => $status]);
     }
 
     public function delete(int $id): bool
     {
         $friendship = Friendship::find($id);
-        
         if (!$friendship) {
             return false;
         }
-
         return $friendship->delete();
     }
 
@@ -59,13 +55,11 @@ class FriendshipRepository implements FriendshipRepositoryInterface
             ->with('friend')
             ->get()
             ->pluck('friend');
-
         $receivedFriends = Friendship::where('friend_id', $userId)
             ->where('status', 'accepted')
             ->with('user')
             ->get()
             ->pluck('user');
-
         return $sentFriends->merge($receivedFriends);
     }
 

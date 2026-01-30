@@ -40,7 +40,7 @@ export default function ChatPage() {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [waitingForBot, setWaitingForBot] = useState(false); // Block until bot responds
+  const [waitingForBot, setWaitingForBot] = useState(false);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
@@ -104,7 +104,6 @@ export default function ChatPage() {
     
     const channel = (Echo as any).connector.pusher.subscribe(`chat.${conversationId}`);
     
-    // Ouvir evento direto do Pusher
     channel.bind('MessageSent', (data: any) => {
       console.log('✅ MENSAGEM RECEBIDA!', data);
       
@@ -119,7 +118,7 @@ export default function ChatPage() {
         
         if (message.type === 'bot') {
           setTypingUsers([]);
-          setWaitingForBot(false); // Allow sending new messages
+          setWaitingForBot(false);
         }
       }
     });
@@ -139,7 +138,6 @@ export default function ChatPage() {
     setNewMessage('');
     setSending(true);
 
-    // Add message optimistically
     const tempMessage: Message = {
       id: Date.now(),
       content: messageContent,
@@ -152,7 +150,6 @@ export default function ChatPage() {
     };
     setMessages(prev => [...prev, tempMessage]);
 
-    // Show typing indicator for AI
     if (conversation?.type === 'ai') {
       setTypingUsers([t('chat.ai.typing')]);
     }
@@ -163,7 +160,7 @@ export default function ChatPage() {
       });
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
-      // Remove optimistic message on error
+      setMessages(prev => prev.filter(m => m.id !== tempMessage.id));
       setMessages(prev => prev.filter(m => m.id !== tempMessage.id));
       setTypingUsers([]);
     } finally {
@@ -181,7 +178,7 @@ export default function ChatPage() {
 
   return (
       <div className="h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col">
-      {/* Header */}
+      {/* Cabeçalho */}
         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
         <div className="flex items-center gap-3">
           <button
@@ -212,7 +209,7 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Messages */}
+      {/* Mensagens */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => {
           const isOwn = message.user?.id === currentUserId;
@@ -267,7 +264,7 @@ export default function ChatPage() {
           );
         })}
 
-        {/* Typing Indicator */}
+        {/* Indicador de digitação */}
         {typingUsers.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -290,7 +287,7 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
+      {/* Campo de mensagem */}
       <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
         <form onSubmit={handleSend} className="flex gap-2">
           <input

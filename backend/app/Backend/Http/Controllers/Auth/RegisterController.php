@@ -26,6 +26,7 @@ class RegisterController extends Controller
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
+        // Cadastro feito, bora logar!
         return response()->json([
             'token' => $token,
             'user' => [

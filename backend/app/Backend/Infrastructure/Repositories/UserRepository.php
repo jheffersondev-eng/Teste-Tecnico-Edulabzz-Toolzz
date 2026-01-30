@@ -28,14 +28,8 @@ class UserRepository implements UserRepositoryInterface
         }
         try {
             $user = User::create($data);
-            Log::debug('[UserRepository] Usuário criado com sucesso', ['user' => $user]);
             return $user;
         } catch (\Exception $e) {
-            Log::error('[UserRepository] Erro ao criar usuário', [
-                'data' => $data,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
             throw $e;
         }
     }
@@ -43,15 +37,12 @@ class UserRepository implements UserRepositoryInterface
     public function update(int $id, array $data): bool
     {
         $user = User::find($id);
-        
         if (!$user) {
             return false;
         }
-
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         }
-
         return $user->update($data);
     }
 
@@ -69,17 +60,13 @@ class UserRepository implements UserRepositoryInterface
         }
     }
 
+    // Se não achou, cria! Simples e direto.
     public function findOrCreateFromOAuth(string $provider, string $providerId, array $userData): User
     {
-        $email = $userData['email'] ?? null;
-        if (!$email) {
-            $email = sprintf('%s@%s.oauth', $providerId, $provider);
-        }
-
+        $email = $userData['email'] ?? sprintf('%s@%s.oauth', $providerId, $provider);
         $user = User::where('oauth_provider', $provider)
             ->where('oauth_provider_id', $providerId)
             ->first();
-
         if (!$user) {
             $user = User::create([
                 'name' => $userData['name'],
@@ -90,7 +77,6 @@ class UserRepository implements UserRepositoryInterface
                 'email_verified_at' => now(),
             ]);
         }
-
         return $user;
     }
 }

@@ -17,36 +17,20 @@ class OAuthController extends Controller
         private UserRepositoryInterface $userRepository
     ) {}
 
-    /**
-     * Redirect to OAuth provider
-     */
     public function redirect(string $provider)
     {
         $this->validateProvider($provider);
         return Socialite::driver($provider)->redirect();
     }
 
-    /**
-     * Handle OAuth callback
-     */
     public function callback(string $provider)
     {
         $this->validateProvider($provider);
-
-        Log::debug('[OAuth] Iniciando callback para provider', ['provider' => $provider]);
+        $frontendUrl = env('FRONTEND_URL');
         try {
             $socialUser = Socialite::driver($provider)->stateless()->user();
-            Log::debug('[OAuth] Dados recebidos do provider', [
-                'id' => $socialUser->getId(),
-                'email' => $socialUser->getEmail(),
-                'name' => $socialUser->getName(),
-            ]);
-            $frontendUrl = env('FRONTEND_URL');
-
             $user = $this->userRepository->findByEmail($socialUser->getEmail());
-            Log::debug('[OAuth] Resultado busca usuário por email', ['user' => $user]);
             if (!$user) {
-                Log::debug('[OAuth] Usuário não encontrado, criando novo usuário');
                 $user = $this->userRepository->create([
                     'name' => $socialUser->getName(),
                     'email' => $socialUser->getEmail(),
@@ -55,17 +39,11 @@ class OAuthController extends Controller
                     'password' => Hash::make(Str::random(32)),
                     'email_verified_at' => now(),
                 ]);
-                Log::debug('[OAuth] Resultado criação de usuário', ['user' => $user]);
             }
-
             if (!$user) {
-                Log::error('[OAuth] Falha ao criar ou encontrar usuário', ['email' => $socialUser->getEmail()]);
                 return redirect('/login')->with('error', 'Não foi possível criar ou encontrar o usuário.');
             }
-
-            $twoFactorRequired = $user->hasEnabledTwoFactorAuthentication();
-            Log::debug('[OAuth] 2FA required?', ['user_id' => $user->id, 'required' => $twoFactorRequired]);
-            if ($twoFactorRequired) {
+            if ($user->hasEnabledTwoFactorAuthentication()) {
                 $challenge = Str::random(64);
                 DB::table('two_factor_challenges')->insert([
                     'user_id' => $user->id,
@@ -74,51 +52,34 @@ class OAuthController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-                Log::debug('[OAuth] Redirecionando para callback com challenge', ['challenge' => $challenge]);
+                // Bora pro 2FA, segurança nunca é demais!
                 return redirect()->away("{$frontendUrl}/auth/callback?challenge={$challenge}");
             }
-
-            Log::debug('[OAuth] Logando usuário', ['user_id' => $user->id]);
             Auth::login($user, true);
             session()->put('user_id', $user->id);
             session()->save();
             DB::table('sessions')->where('id', session()->getId())->update(['user_id' => $user->id]);
-
-            // Função recursiva para garantir que a sessão tenha user_id
             $this->ensureSessionUserId($user->id);
-
             $token = $user->createToken('oauth-token')->plainTextToken;
-            Log::debug('[OAuth] Token gerado e redirecionando', ['user_id' => $user->id, 'token' => $token]);
+            // Tudo certo, bora logar!
             return redirect()->away("{$frontendUrl}/auth/callback?token={$token}");
         } catch (\Exception $e) {
-            Log::error('[OAuth] Exceção no callback', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return redirect('/login')->with('error', 'OAuth authentication failed: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Garante que o user_id seja persistido na sessão (função recursiva)
-     */
+    // Só pra garantir que o user_id vai pra sessão, insistente igual mãe mandando levar casaco
     private function ensureSessionUserId(int $userId, int $attempts = 0): void
     {
         if (session('user_id') == $userId || $attempts >= 10) {
-            Log::debug('[OAuth] Sessão garantida após tentativas', ['attempts' => $attempts, 'session_user_id' => session('user_id')]);
             return;
         }
-
         session()->save();
         DB::table('sessions')->where('id', session()->getId())->update(['user_id' => $userId]);
-        Log::debug('[OAuth] Tentativa recursiva de persistir user_id', ['attempt' => $attempts + 1, 'session_user_id' => session('user_id')]);
-
-        // Pequeno delay para garantir persistência
         usleep(100000); // 0.1s
-
         $this->ensureSessionUserId($userId, $attempts + 1);
     }
 
-    /**
-     * Validate OAuth provider
-     */
     protected function validateProvider(string $provider)
     {
         if (!in_array($provider, ['google', 'github'])) {

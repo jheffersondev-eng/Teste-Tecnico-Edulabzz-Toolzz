@@ -15,7 +15,7 @@ export default function LandingPage() {
   useEffect(() => {
     setMounted(true);
     
-    // Check if user is already logged in
+    // Redireciona se já estiver logado
     const token = localStorage.getItem('token');
     if (token) {
       router.push('/dashboard');
@@ -40,16 +40,16 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:via-purple-900 dark:to-gray-900 text-gray-900 dark:text-white overflow-hidden">
-      {/* Animated background */}
+      {/* Fundo animado bonitão */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
         <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
-      {/* Content */}
+      {/* Conteúdo principal */}
       <div className="relative z-10">
-        {/* Header */}
+        {/* Cabeçalho */}
         <motion.header
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -66,7 +66,7 @@ export default function LandingPage() {
           </div>
         </motion.header>
 
-      {/* Hero Section */}
+      {/* Seção principal */}
       <section className="container mx-auto px-6 py-20">
           <div className="flex flex-col items-center text-center">
             <motion.div
@@ -135,7 +135,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-      {/* Features */}
+      {/* Funcionalidades */}
       <section className="container mx-auto px-6 py-20">
           <motion.div
             initial={{ opacity: 0 }}
@@ -181,7 +181,7 @@ export default function LandingPage() {
           </motion.div>
         </section>
 
-        {/* CTA Section */}
+        {/* Chamada para ação */}
         <section className="container mx-auto px-6 py-20">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -206,7 +206,7 @@ export default function LandingPage() {
           </motion.div>
         </section>
 
-        {/* Footer */}
+        {/* Rodapé */}
         <footer className="container mx-auto px-6 py-8 border-t border-gray-200 dark:border-gray-800">
           <div className="text-center text-gray-500 dark:text-gray-400">
             <p>ChatFlow © 2026 - Comunicação Inteligente em Tempo Real</p>
@@ -240,7 +240,7 @@ export default function LandingPage() {
         }
       `}</style>
 
-      {/* Bug Modal */}
+      {/* Modal de bug temporário */}
       {showBugModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4">
